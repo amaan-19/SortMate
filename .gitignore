@@ -1,0 +1,13 @@
+# Ignore API credentials
+client_secret.json
+token.json
+
+# Ignore virtual environment
+venv/
+__pycache__/
+
+# Ignore system files
+.DS_Store
+
+# Ignore Visual Study metadata
+.vs/
