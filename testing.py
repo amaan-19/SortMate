@@ -4,22 +4,31 @@ from sort_emails import *
 
 
 if __name__ == "__main__":
-    # Authenticate and build Gmail service
+    # authenticate and build Gmail service
     creds = authenticate()
     service = build('gmail', 'v1', credentials=creds)
 
-    # Fetch all messages recieved in the last 24 hours
+    messages = get_all_emails(service, user_id='me')
+
+    print(f"Found {len(messages)} emails.")
+        
+
+    """
+    # fetch all messages recieved in the last 24 hours
     QUERY = 'newer_than:1d'
     messages = get_messages(service, query=QUERY)
 
-    # Display message details
+    # display message details
     print(f"Found {len(messages)} emails matching '{QUERY}'")
     print(f"Sorted messages")
-    for msg in messages[:5]:  # Limit to first 5 messages for demo
-        subject, snippet = get_message_details(service, msg['id'])
+    for msg in messages[:5]: # limit to first 5 messages for demo
+        subject = get_message_subject(service, msg['id'])
+        labelIds = get_message_labels(service, msg['id'])
         print(f"Subject: {subject}")
-        print(f"Snippet: {snippet}\n")
+        print(f"labelIds: {labelIds}\n")
         
     # get current labels
     current_labels = get_current_labels(service)
-    print(current_labels)
+    for label in current_labels['labels']:
+        print(label)
+    """
