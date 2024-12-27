@@ -1,15 +1,4 @@
-from fetch_emails import *
+from authenticate_email import authenticate
 
-
-def get_email_date(message):
-    headers = message['payload']['headers']
-    for header in headers:
-        if header['name'] == 'Date':
-            return header['value']
-    return None
-
-def sort_by_date(messages):
-	for message in messages:
-        curr_date = get_email_date(message)
-
-	return sorted_messages
+def get_current_labels(service):
+	return service.users().labels().list(userId='me')
