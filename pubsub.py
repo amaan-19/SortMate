@@ -1,4 +1,6 @@
 from google.cloud import pubsub_v1
+import json
+
 
 def callback(message):
     """Process new email notifications."""

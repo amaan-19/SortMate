@@ -1,4 +1,7 @@
-from authenticate_email import authenticate
+from googleapiclient.discovery import build  # For interacting with Gmail API (modifying labels, etc.)
+from googleapiclient.errors import HttpError  # For handling errors during Gmail API calls
+import json
+
 
 def sort_past_emails(service):
     """Sort all past emails."""

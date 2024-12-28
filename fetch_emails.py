@@ -1,4 +1,8 @@
-from authenticate_email import authenticate
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+import os
+import json
+
 
 def get_emails(service, user_id='me', query=''):
     """

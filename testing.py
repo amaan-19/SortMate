@@ -1,8 +1,9 @@
-from googleapiclient.discovery import build
-from fetch_emails import *
-from sort_emails import *
-from watch_request import *
-import time
+from authenticate import authenticate  # For user authentication
+from fetch_emails import get_all_emails  # For fetching emails
+from sort import sort_past_emails  # For sorting logic
+from pubsub import callback  # For processing Pub/Sub notifications
+from googleapiclient.discovery import build  # To create Gmail API service object
+import time 
 
 
 if __name__ == "__main__":
