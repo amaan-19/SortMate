@@ -1,6 +1,7 @@
 # Ignore API credentials
 client_secret.json
 token.json
+service_account_key.json
 
 # Ignore virtual environment
 venv/

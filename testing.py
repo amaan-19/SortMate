@@ -1,6 +1,8 @@
 from googleapiclient.discovery import build
 from fetch_emails import *
 from sort_emails import *
+from watch_request import *
+import time
 
 
 if __name__ == "__main__":
@@ -8,27 +10,18 @@ if __name__ == "__main__":
     creds = authenticate()
     service = build('gmail', 'v1', credentials=creds)
 
-    messages = get_all_emails(service, user_id='me')
+    # sort existing emails
+    sort_past_emails(service)
 
-    print(f"Found {len(messages)} emails.")
-        
+    # begin watching out for emails
+    start_watch(service)
 
-    """
-    # fetch all messages recieved in the last 24 hours
-    QUERY = 'newer_than:1d'
-    messages = get_messages(service, query=QUERY)
+    # create subscriber client 
+    subscriber = pubsub_v1.SubscriberClient()
+    subscription_path = 'projects/emailorganizer-445912/subscriptions/email_notifications-sub'
+    subscriber.subscribe(subscription_path, callback=callback)
 
-    # display message details
-    print(f"Found {len(messages)} emails matching '{QUERY}'")
-    print(f"Sorted messages")
-    for msg in messages[:5]: # limit to first 5 messages for demo
-        subject = get_message_subject(service, msg['id'])
-        labelIds = get_message_labels(service, msg['id'])
-        print(f"Subject: {subject}")
-        print(f"labelIds: {labelIds}\n")
-        
-    # get current labels
-    current_labels = get_current_labels(service)
-    for label in current_labels['labels']:
-        print(label)
-    """
+    # have script run indefinitely
+    print("Listening for messages...")
+    while True:
+        time.sleep(60)

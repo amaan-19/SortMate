@@ -1,6 +1,6 @@
 from authenticate_email import authenticate
 
-def get_all_emails(service, user_id='me', query=''):
+def get_emails(service, user_id='me', query=''):
     """
     Fetch all emails for a user, respecting the 500-email limit per call.
     :param service: Authorized Gmail API service instance
@@ -31,20 +31,3 @@ def get_all_emails(service, user_id='me', query=''):
 
     return all_emails
 
-
-def get_message_subject(service, msg_id):
-    msg = service.users().messages().get(userId='me', id=msg_id).execute()
-    payload = msg['payload']
-    headers = payload['headers']
-    subject = next(header['value'] for header in headers if header['name'] == 'Subject')
-    return subject
-
-def get_message_snippet(service, msg_id):
-    msg = service.users().messages().get(userId='me', id=msg_id).execute()
-    snippet = msg.get('snippet', '')
-    return snippet
-
-def get_message_labels(service, msg_id):
-    msg = service.users().messages().get(userId='me', id=msg_id).execute()
-    labelIds = msg['labelIds']
-    return labelIds
