@@ -4,7 +4,7 @@ from googleapiclient.errors import HttpError
 
 def start_watch(service):
     request_body = {
-        'labelIds': ['INBOX'],  # Monitor only the inbox for simplicity
+        'labelIds': ['INBOX'],  # monitor only the inbox for simplicity
         'topicName': 'projects/emailorganizer-445912/topics/email_notifications'
     }
     response = service.users().watch(userId='me', body=request_body).execute()

@@ -4,7 +4,8 @@ from google.auth.transport.requests import Request
 import os
 
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly','https://www.googleapis.com/auth/gmail.modify']
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
+          'https://www.googleapis.com/auth/gmail.modify']
 
 def authenticate():
     creds = None
@@ -19,3 +20,6 @@ def authenticate():
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
     return creds
+
+
+authenticate() # to run script if needed
