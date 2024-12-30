@@ -8,7 +8,7 @@ def callback(message):
         data = json.loads(message.data)
         print(f"Parsed message data: {data}")
 
-        # extract gail-specific details (if available)
+        # extract gmail-specific details (if available)
         history_id = data.get('historyId')
         if history_id:
             print(f"Processing history ID: {history_id}")
