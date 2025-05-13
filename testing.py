@@ -101,7 +101,7 @@ def main():
     try:
         # authenticate user
         logger.info("Authenticating with Google...")
-        creds = authenticate()
+        creds = get_credentials()
         
         # build Gmail service
         logger.info("Building Gmail API service...")
