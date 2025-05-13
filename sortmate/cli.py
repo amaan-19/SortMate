@@ -24,7 +24,7 @@ from google.cloud import pubsub_v1
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from authenticate import authenticate
+from authenticate import get_credentials
 from sort import sort_past_emails
 from watch import start_watch
 from pubsub import callback

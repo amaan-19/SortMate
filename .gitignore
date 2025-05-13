@@ -2,18 +2,20 @@
 client_secret.json
 token.json
 service_account_key.json
+token.pickle
+*.pickle
 
 # Ignore virtual environment
+.venv/
 venv/
 __pycache__/
 
 # Ignore system files
 .DS_Store
 
-# Ignore Visual Study metadata
+# Ignore Visual Studio metadata
 .vs/
-.idea/t o k e n . p i c k l e 
- 
- t o k e n . p i c k l e 
- 
+.idea/
+
+# Ignore environment variables
 .env

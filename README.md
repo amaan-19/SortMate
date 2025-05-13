@@ -1,4 +1,4 @@
-# Gmail Organizer
+# SortMate
 
 An automated system to organize Gmail messages by applying date labels (year/month) and monitoring for new emails.
 
@@ -31,8 +31,8 @@ An automated system to organize Gmail messages by applying date labels (year/mon
 
 1. Clone this repository:
 ```
-git clone https://github.com/yourusername/gmail-organizer.git
-cd gmail-organizer
+git clone https://github.com/amaan-19/SortMate.git
+cd SortMate
 ```
 
 2. Set up a virtual environment:
@@ -62,12 +62,49 @@ pip install pre-commit
 pre-commit install
 ```
 
+### Configuration and Environment Variables
+
+1. Create a `.env` file in the project root directory:
+```
+# Copy the example configuration
+cp .env.example .env
+```
+
+2. Edit the `.env` file and set your configuration values:
+```
+# Google OAuth Configuration
+GOOGLE_CLIENT_SECRETS_FILE=/path/to/your/credentials.json
+GOOGLE_TOKEN_DIR=~/.config/SortMate/tokens
+GOOGLE_API_SCOPES=https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.labels
+
+# Google Cloud Project Details
+GOOGLE_CLOUD_PROJECT=your-project-id
+PUBSUB_TOPIC=your-topic-name
+PUBSUB_SUBSCRIPTION=your-subscription-name
+```
+
+### Setting Up Google API Credentials
+
+1. Set up Google API credentials:
+   - Create a project in the [Google Cloud Console](https://console.cloud.google.com/)
+   - Enable the Gmail API
+   - Create OAuth client credentials and download as `client_secret.json`
+   - Store `client_secret.json` in a secure location outside your project directory
+
+2. Update the `GOOGLE_CLIENT_SECRETS_FILE` in your `.env` file to point to this location
+
+3. For real-time monitoring:
+   - Enable the Pub/Sub API in Google Cloud Console
+   - Create a Pub/Sub topic (use the same name as in your `.env` file)
+   - Create a subscription for the topic
+   - Update your `.env` file with the topic and subscription names
+
 ### Installation for Users
 
 1. Clone this repository
 2. Navigate to the project directory:
 ```
-cd gmail-organizer  # or whatever your repository is named
+cd SortMate
 ```
 3. Set up a virtual environment (recommended):
 ```
@@ -86,14 +123,7 @@ python -m venv venv
 ```
 pip install -r requirements.txt
 ```
-
-3. Set up Google API credentials:
-   - Create a project in the [Google Cloud Console](https://console.cloud.google.com/)
-   - Enable the Gmail API
-   - Create OAuth client credentials and download as `client_secret.json`
-   - Place `client_secret.json` in the project directory
-
-4. Update the path in `authenticate.py` to point to your client_secret.json file
+6. Create and configure your `.env` file as described in the Configuration section
 
 ### Usage
 
@@ -113,7 +143,7 @@ python testing.py --max-emails 10
 python testing.py --monitor
 
 # Sort a limited number and monitor with verbose logging
-python testing.py --monitor --max-emails 20 --verbose
+python testing.py --max-emails 20 --verbose
 ```
 
 #### Command-line Options
@@ -122,25 +152,14 @@ python testing.py --monitor --max-emails 20 --verbose
 - `--max-emails N`: Limit processing to N emails (useful for testing)
 - `--verbose`: Enable detailed logging output
 
-#### Real-time Email Monitoring
+## Security Considerations
 
-To set up real-time monitoring:
+SortMate handles sensitive Google API credentials. Follow these security best practices:
 
-1. Enable Pub/Sub API in Google Cloud Console
-2. Create a Pub/Sub topic named `email_notifications`
-3. Create a subscription named `email_notifications-sub`
-4. Grant the necessary permissions for Gmail to publish to your topic
-5. Run the application with the `--monitor` flag
-
-## Project Setup
-
-If you want to modify or contribute to this project, follow these steps:
-
-1. Clone the repository
-2. Set up a development environment
-3. Install dependencies
-4. Configure authentication
-5. Run with test parameters
+1. **Never commit credentials to Git**: All credential files are listed in `.gitignore`
+2. **Store tokens securely**: By default, tokens are stored in `~/.config/SortMate/tokens` with secure file permissions
+3. **Use environment variables**: Set paths to credential files in your `.env` file
+4. **Restrict scopes**: Only request the minimum scopes needed for the application
 
 ## Current Limitations
 
@@ -157,3 +176,36 @@ If you want to modify or contribute to this project, follow these steps:
 - Implement a system tray application for easier monitoring
 - Add support for filtering emails by content
 - Create a configuration file for persistent settings
+
+## Troubleshooting
+
+### Authentication Issues
+
+If you encounter authentication errors:
+
+1. Check that your `GOOGLE_CLIENT_SECRETS_FILE` path is correct
+2. Verify that you've enabled the Gmail API in your Google Cloud project
+3. Try removing the token file and re-authenticating
+4. Ensure your OAuth consent screen is properly configured
+
+### Monitoring Issues
+
+If real-time monitoring isn't working:
+
+1. Verify that the Pub/Sub API is enabled
+2. Check that your topic and subscription names match the values in your `.env` file
+3. Ensure your service account has appropriate permissions
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

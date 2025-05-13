@@ -9,3 +9,4 @@ def start_watch(service):
     }
     response = service.users().watch(userId='me', body=request_body).execute()
     print("Watch response:", response)
+    return response  # Return the response

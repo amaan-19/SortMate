@@ -17,7 +17,8 @@ except ImportError:
 CLIENT_SECRETS_FILE = os.environ.get('GOOGLE_CLIENT_SECRETS_FILE')
 TOKEN_DIR = os.environ.get('GOOGLE_TOKEN_DIR', '~/.config/SortMate/tokens')
 TOKEN_DIR = os.path.expanduser(TOKEN_DIR)  # Expand ~ to home directory
-SCOPES = os.environ.get('GOOGLE_API_SCOPES', 'https://www.googleapis.com/auth/drive.metadata.readonly').split(',')
+SCOPES = os.environ.get('GOOGLE_API_SCOPES', 'https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.labels').split(',')
+
 
 def get_token_path():
     """Get secure token storage path."""
