@@ -28,7 +28,24 @@ An automated system to organize Gmail messages by applying date labels (year/mon
 ### Installation
 
 1. Clone this repository
-2. Install the required dependencies:
+2. Navigate to the project directory:
+```
+cd gmail-organizer  # or whatever your repository is named
+```
+3. Set up a virtual environment (recommended):
+```
+python -m venv venv
+```
+4. Activate the virtual environment:
+   - On Windows:
+   ```
+   venv\Scripts\activate
+   ```
+   - On macOS/Linux:
+   ```
+   source venv/bin/activate
+   ```
+5. Install the required dependencies:
 ```
 pip install -r requirements.txt
 pip install google-api-python-client google-cloud-pubsub
