@@ -1,3 +1,8 @@
 google-auth==2.38.0
-google-api-python-client
-google-cloud-pubsub
+google-api-python-client==2.123.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+google-cloud-pubsub==2.22.0
+argparse==1.4.0
+python-dateutil==2.8.2
+requests==2.31.0
