@@ -12,3 +12,4 @@ __pycache__/
 
 # Ignore Visual Study metadata
 .vs/
+.idea/
