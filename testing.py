@@ -1,10 +1,6 @@
 from authenticate import authenticate  # for user authentication
 from sort import sort_past_emails  # for sorting logic
-from pubsub import callback  # for processing pubsub notifications
-from watch import start_watch # for asking gmail to provide notifications for new emails
 from googleapiclient.discovery import build  # to create gmail api service object
-from googleapiclient.errors import HttpError # to handle errors during api calls
-import time # to help with listening
 
 
 if __name__ == "__main__":
