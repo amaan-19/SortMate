@@ -7,7 +7,9 @@ An automated system to organize Gmail messages by applying date labels (year/mon
 - **Authentication**: Securely authenticate with Google OAuth2
 - **Date-based Organization**: Automatically labels emails by year and month
 - **Batch Processing**: Efficiently processes multiple emails at once
-- **Real-time Monitoring** (in development): Watch for new emails using Gmail API webhooks and Google Cloud Pub/Sub
+- **Real-time Monitoring**: Watch for new emails using Gmail API webhooks and Google Cloud Pub/Sub
+- **Command-line Interface**: Flexible options for running the application
+- **Logging**: Comprehensive logging system for monitoring and debugging
 
 ## Project Structure
 
@@ -51,7 +53,6 @@ python -m venv venv
 4. Install development dependencies:
 ```
 pip install -r requirements.txt
-pip install google-api-python-client google-cloud-pubsub
 pip install pytest flake8 black  # Optional development tools
 ```
 
@@ -84,7 +85,6 @@ python -m venv venv
 5. Install the required dependencies:
 ```
 pip install -r requirements.txt
-pip install google-api-python-client google-cloud-pubsub
 ```
 
 3. Set up Google API credentials:
@@ -97,39 +97,63 @@ pip install google-api-python-client google-cloud-pubsub
 
 ### Usage
 
-#### Basic Email Sorting
+After installation, you can run the application with various options:
 
-To sort existing emails in your inbox:
-
-```
+```bash
+# Basic usage - just sort emails
 python testing.py
+
+# Sort with verbose logging
+python testing.py --verbose
+
+# Sort only the first 10 emails (for testing)
+python testing.py --max-emails 10
+
+# Sort emails and then start monitoring
+python testing.py --monitor
+
+# Sort a limited number and monitor with verbose logging
+python testing.py --monitor --max-emails 20 --verbose
 ```
 
-This will:
-1. Authenticate with your Google account
-2. Create year and month labels if they don't exist
-3. Apply appropriate date labels to your emails
+#### Command-line Options
 
-#### Real-time Email Monitoring (In Development)
+- `--monitor`: Enable real-time email monitoring
+- `--max-emails N`: Limit processing to N emails (useful for testing)
+- `--verbose`: Enable detailed logging output
+
+#### Real-time Email Monitoring
 
 To set up real-time monitoring:
 
-1. Enable Pub/Sub API in Google Cloud
-2. Create a Pub/Sub topic and subscription
-3. Update the topic and subscription names in `watch.py` and `pubsub.py`
-4. Uncomment the pub/sub sections in `testing.py`
-5. Run the application
+1. Enable Pub/Sub API in Google Cloud Console
+2. Create a Pub/Sub topic named `email_notifications`
+3. Create a subscription named `email_notifications-sub`
+4. Grant the necessary permissions for Gmail to publish to your topic
+5. Run the application with the `--monitor` flag
+
+## Project Setup
+
+If you want to modify or contribute to this project, follow these steps:
+
+1. Clone the repository
+2. Set up a development environment
+3. Install dependencies
+4. Configure authentication
+5. Run with test parameters
 
 ## Current Limitations
 
-- Authentication flow needs to be completed
-- Hardcoded paths need to be updated
-- Only basic date-based sorting is implemented
-- Pub/Sub integration is prepared but commented out
+- Only implements date-based sorting (year/month)
+- Requires manual setup of Google Cloud project
+- No graphical user interface
+- Requires Pub/Sub setup for real-time monitoring
 
 ## Future Enhancements
 
 - Add more sophisticated sorting rules based on sender, subject, etc.
 - Create a user interface for configuration
-- Add error handling and logging
-- Implement a more robust authentication flow
+- Add support for custom label hierarchies
+- Implement a system tray application for easier monitoring
+- Add support for filtering emails by content
+- Create a configuration file for persistent settings
