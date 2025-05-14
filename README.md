@@ -1,14 +1,3 @@
-## Roadmap
-
-- [ ] Add additional sorting methods (sender, subject, keywords)
-- [ ] Implement user interface (web-based or desktop)
-- [ ] Support custom label hierarchies and rules
-- [ ] Create a system tray application for continuous monitoring
-- [ ] Add support for multi-user environments
-- [ ] Implement filtering capability based on email content
-- [ ] Add configuration file for persistent settings
-- [ ] Support for other email providers (via IMAP)
-
 # SortMate
 
 A smart Gmail organization tool that automatically categorizes emails using date-based labels. This Python application uses Gmail API and Google Cloud services to intelligently sort your inbox, saving you time and keeping your emails neatly organized without manual effort.
@@ -31,6 +20,8 @@ A smart Gmail organization tool that automatically categorizes emails using date
   - `watch.py` - Sets up Gmail API watch notification
   - `pubsub.py` - Processes notifications from Pub/Sub
   - `cli.py` - Command-line interface and entry point
+- `tests/` - Test directory
+- `run_sortmate.py` - Development script for easy testing
 
 ## Installation
 
@@ -39,6 +30,7 @@ A smart Gmail organization tool that automatically categorizes emails using date
 - Python 3.6+
 - A Google Cloud project with Gmail API enabled
 - OAuth2 client credentials
+- For real-time monitoring: Pub/Sub API enabled
 
 ### Installation Options
 
@@ -109,7 +101,7 @@ GOOGLE_CLIENT_SECRETS_FILE=/path/to/your/credentials.json
 GOOGLE_TOKEN_DIR=~/.config/SortMate/tokens
 GOOGLE_API_SCOPES=https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.labels
 
-# Google Cloud Project Details
+# Google Cloud Project Details (needed for real-time monitoring)
 GOOGLE_CLOUD_PROJECT=your-project-id
 PUBSUB_TOPIC=your-topic-name
 PUBSUB_SUBSCRIPTION=your-subscription-name
@@ -131,7 +123,7 @@ For real-time monitoring:
 
 ## Usage
 
-### Running as a Command-line Tool
+### Running SortMate
 
 After installation, you can run SortMate with various options:
 
@@ -139,8 +131,11 @@ After installation, you can run SortMate with various options:
 # If installed with pip or in development mode
 sortmate
 
-# Or run the module directly
+# Or run the module directly from the project root
 python -m sortmate.cli
+
+# Use the development script
+python run_sortmate.py
 
 # With command-line options
 sortmate --monitor --verbose --max-emails 50
@@ -155,7 +150,7 @@ sortmate --monitor --verbose --max-emails 50
 ### Examples
 
 ```bash
-# Basic usage - just sort emails
+# Basic usage - just sort existing emails
 sortmate
 
 # Sort with verbose logging
@@ -164,12 +159,37 @@ sortmate --verbose
 # Sort only the first 10 emails (for testing)
 sortmate --max-emails 10
 
-# Sort emails and then start monitoring
+# Sort emails and then start monitoring for new emails
 sortmate --monitor
 
 # Sort a limited number and monitor with verbose logging
-sortmate --max-emails 20 --verbose
+sortmate --monitor --max-emails 20 --verbose
 ```
+
+## Real-time Email Monitoring
+
+SortMate can continuously monitor your inbox for new emails and automatically sort them as they arrive.
+
+### How It Works
+
+1. Gmail API sends a notification to Google Cloud Pub/Sub when new emails arrive
+2. SortMate receives this notification and processes the new emails
+3. The emails are automatically sorted with date-based labels
+
+### Setting Up Monitoring
+
+1. Configure Google Cloud Pub/Sub (see Configuration section)
+2. Run SortMate with the `--monitor` flag:
+```bash
+sortmate --monitor
+```
+
+### Monitoring Notes
+
+- The Gmail API watch will expire after 7 days, requiring a restart of SortMate
+- Running with `--monitor` keeps the process running indefinitely
+- Press Ctrl+C to gracefully stop monitoring
+- For production use, consider using a system service manager like systemd
 
 ## Security Considerations
 
@@ -199,6 +219,29 @@ If real-time monitoring isn't working:
 1. Verify Pub/Sub API is enabled
 2. Check topic and subscription names in your `.env` file
 3. Ensure your service account has appropriate permissions
+4. Run with `--verbose` flag for detailed logging
+5. Check if you've exceeded your Google Cloud free tier limits
+
+### Common Import Errors
+
+If you get a "No module named 'sortmate'" error:
+
+1. Run from the project root using: `python -m sortmate.cli`
+2. Or install in development mode: `pip install -e .`
+3. Or use the provided development script: `python run_sortmate.py`
+
+## Roadmap
+
+- [x] Core email sorting functionality
+- [x] Real-time monitoring of new emails
+- [ ] Add additional sorting methods (sender, subject, keywords)
+- [ ] Implement user interface (web-based or desktop)
+- [ ] Support custom label hierarchies and rules
+- [ ] Create a system tray application for continuous monitoring
+- [ ] Add support for multi-user environments
+- [ ] Implement filtering capability based on email content
+- [ ] Add configuration file for persistent settings
+- [ ] Support for other email providers (via IMAP)
 
 ## Contributing
 
