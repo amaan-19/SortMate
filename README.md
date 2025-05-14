@@ -7,7 +7,9 @@
 - [ ] Add support for multi-user environments
 - [ ] Implement filtering capability based on email content
 - [ ] Add configuration file for persistent settings
-- [ ] Support for other email providers (via IMAP)# SortMate
+- [ ] Support for other email providers (via IMAP)
+
+# SortMate
 
 A smart Gmail organization tool that automatically categorizes emails using date-based labels. This Python application uses Gmail API and Google Cloud services to intelligently sort your inbox, saving you time and keeping your emails neatly organized without manual effort.
 
