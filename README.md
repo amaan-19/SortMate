@@ -1,6 +1,15 @@
-# SortMate
+## Roadmap
 
-An automated system to organize Gmail messages by applying date labels (year/month) and monitoring for new emails.
+- [ ] Add additional sorting methods (sender, subject, keywords)
+- [ ] Implement user interface (web-based or desktop)
+- [ ] Support custom label hierarchies and rules
+- [ ] Create a system tray application for continuous monitoring
+- [ ] Add support for multi-user environments
+- [ ] Implement filtering capability based on email content
+- [ ] Add configuration file for persistent settings
+- [ ] Support for other email providers (via IMAP)# SortMate
+
+A smart Gmail organization tool that automatically categorizes emails using date-based labels. This Python application uses Gmail API and Google Cloud services to intelligently sort your inbox, saving you time and keeping your emails neatly organized without manual effort.
 
 ## Features
 
@@ -13,13 +22,15 @@ An automated system to organize Gmail messages by applying date labels (year/mon
 
 ## Project Structure
 
-- `authenticate.py` - Handles Google OAuth2 authentication
-- `sort.py` - Contains email sorting and labeling logic
-- `watch.py` - Sets up Gmail API watch notification
-- `pubsub.py` - Processes notifications from Pub/Sub
-- `testing.py` - Main entry point to run the application
+- `sortmate/` - Main package directory
+  - `__init__.py` - Package initialization and exports
+  - `authenticate.py` - Handles Google OAuth2 authentication
+  - `sort.py` - Contains email sorting and labeling logic
+  - `watch.py` - Sets up Gmail API watch notification
+  - `pubsub.py` - Processes notifications from Pub/Sub
+  - `cli.py` - Command-line interface and entry point
 
-## Setup Instructions
+## Installation
 
 ### Prerequisites
 
@@ -27,50 +38,69 @@ An automated system to organize Gmail messages by applying date labels (year/mon
 - A Google Cloud project with Gmail API enabled
 - OAuth2 client credentials
 
-### Development Environment Setup
+### Installation Options
+
+#### Option 1: Install from GitHub (Development Mode)
 
 1. Clone this repository:
-```
+```bash
 git clone https://github.com/amaan-19/SortMate.git
 cd SortMate
 ```
 
 2. Set up a virtual environment:
-```
-python -m venv venv
+```bash
+python -m venv .venv
 ```
 
 3. Activate the virtual environment:
    - On Windows:
-   ```
-   venv\Scripts\activate
+   ```bash
+   .venv\Scripts\activate
    ```
    - On macOS/Linux:
-   ```
-   source venv/bin/activate
+   ```bash
+   source .venv/bin/activate
    ```
 
-4. Install development dependencies:
+4. Install in development mode:
+```bash
+pip install -e .
 ```
+
+#### Option 2: Install via pip (Coming Soon)
+
+```bash
+pip install sortmate
+```
+
+### Development Setup
+
+If you're contributing to the project:
+
+1. Install development dependencies:
+```bash
 pip install -r requirements.txt
-pip install pytest flake8 black  # Optional development tools
+pip install pytest flake8 black  # Development tools
 ```
 
-5. Set up pre-commit hooks (optional):
-```
+2. Set up pre-commit hooks (optional):
+```bash
 pip install pre-commit
 pre-commit install
 ```
 
-### Configuration and Environment Variables
+## Configuration
 
-1. Create a `.env` file in the project root directory:
-```
+### Setting Up Environment Variables
+
+1. Create a `.env` file in the project root:
+```bash
 # Copy the example configuration
 cp .env.example .env
 ```
 
-2. Edit the `.env` file and set your configuration values:
+2. Configure your environment variables:
 ```
 # Google OAuth Configuration
 GOOGLE_CLIENT_SECRETS_FILE=/path/to/your/credentials.json
@@ -83,74 +113,61 @@ PUBSUB_TOPIC=your-topic-name
 PUBSUB_SUBSCRIPTION=your-subscription-name
 ```
 
-### Setting Up Google API Credentials
+### Google API Setup
 
-1. Set up Google API credentials:
-   - Create a project in the [Google Cloud Console](https://console.cloud.google.com/)
-   - Enable the Gmail API
-   - Create OAuth client credentials and download as `client_secret.json`
-   - Store `client_secret.json` in a secure location outside your project directory
+1. Create a project in the [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable the Gmail API
+3. Create OAuth client credentials (Desktop application type)
+4. Download the credentials as `client_secret.json`
+5. Store this file securely outside your project directory
+6. Update your `.env` file with the path to this file
 
-2. Update the `GOOGLE_CLIENT_SECRETS_FILE` in your `.env` file to point to this location
+For real-time monitoring:
+1. Enable the Pub/Sub API in Google Cloud Console
+2. Create a Pub/Sub topic and subscription
+3. Update your `.env` file with the topic and subscription names
 
-3. For real-time monitoring:
-   - Enable the Pub/Sub API in Google Cloud Console
-   - Create a Pub/Sub topic (use the same name as in your `.env` file)
-   - Create a subscription for the topic
-   - Update your `.env` file with the topic and subscription names
+## Usage
 
-### Installation for Users
+### Running as a Command-line Tool
 
-1. Clone this repository
-2. Navigate to the project directory:
-```
-cd SortMate
-```
-3. Set up a virtual environment (recommended):
-```
-python -m venv venv
-```
-4. Activate the virtual environment:
-   - On Windows:
-   ```
-   venv\Scripts\activate
-   ```
-   - On macOS/Linux:
-   ```
-   source venv/bin/activate
-   ```
-5. Install the required dependencies:
-```
-pip install -r requirements.txt
-```
-6. Create and configure your `.env` file as described in the Configuration section
-
-### Usage
-
-After installation, you can run the application with various options:
+After installation, you can run SortMate with various options:
 
 ```bash
-# Basic usage - just sort emails
-python testing.py
+# If installed with pip or in development mode
+sortmate
 
-# Sort with verbose logging
-python testing.py --verbose
+# Or run the module directly
+python -m sortmate.cli
 
-# Sort only the first 10 emails (for testing)
-python testing.py --max-emails 10
-
-# Sort emails and then start monitoring
-python testing.py --monitor
-
-# Sort a limited number and monitor with verbose logging
-python testing.py --max-emails 20 --verbose
+# With command-line options
+sortmate --monitor --verbose --max-emails 50
 ```
 
-#### Command-line Options
+### Command-line Options
 
 - `--monitor`: Enable real-time email monitoring
 - `--max-emails N`: Limit processing to N emails (useful for testing)
 - `--verbose`: Enable detailed logging output
+
+### Examples
+
+```bash
+# Basic usage - just sort emails
+sortmate
+
+# Sort with verbose logging
+sortmate --verbose
+
+# Sort only the first 10 emails (for testing)
+sortmate --max-emails 10
+
+# Sort emails and then start monitoring
+sortmate --monitor
+
+# Sort a limited number and monitor with verbose logging
+sortmate --max-emails 20 --verbose
+```
 
 ## Security Considerations
 
@@ -158,24 +175,8 @@ SortMate handles sensitive Google API credentials. Follow these security best pr
 
 1. **Never commit credentials to Git**: All credential files are listed in `.gitignore`
 2. **Store tokens securely**: By default, tokens are stored in `~/.config/SortMate/tokens` with secure file permissions
-3. **Use environment variables**: Set paths to credential files in your `.env` file
-4. **Restrict scopes**: Only request the minimum scopes needed for the application
-
-## Current Limitations
-
-- Only implements date-based sorting (year/month)
-- Requires manual setup of Google Cloud project
-- No graphical user interface
-- Requires Pub/Sub setup for real-time monitoring
-
-## Future Enhancements
-
-- Add more sophisticated sorting rules based on sender, subject, etc.
-- Create a user interface for configuration
-- Add support for custom label hierarchies
-- Implement a system tray application for easier monitoring
-- Add support for filtering emails by content
-- Create a configuration file for persistent settings
+3. **Use environment variables**: Store paths to credential files in your `.env` file
+4. **Restrict API scopes**: Only request the minimum permissions needed
 
 ## Troubleshooting
 
@@ -183,17 +184,18 @@ SortMate handles sensitive Google API credentials. Follow these security best pr
 
 If you encounter authentication errors:
 
-1. Check that your `GOOGLE_CLIENT_SECRETS_FILE` path is correct
-2. Verify that you've enabled the Gmail API in your Google Cloud project
-3. Try removing the token file and re-authenticating
-4. Ensure your OAuth consent screen is properly configured
+1. Verify your `GOOGLE_CLIENT_SECRETS_FILE` path is correct
+2. Ensure Gmail API is enabled in your Google Cloud project
+3. Check that OAuth consent screen is properly configured
+4. For `redirect_uri_mismatch` errors, add `http://localhost:8080/` to your authorized redirect URIs in Google Cloud Console
+5. Try removing existing token files to force re-authentication
 
 ### Monitoring Issues
 
 If real-time monitoring isn't working:
 
-1. Verify that the Pub/Sub API is enabled
-2. Check that your topic and subscription names match the values in your `.env` file
+1. Verify Pub/Sub API is enabled
+2. Check topic and subscription names in your `.env` file
 3. Ensure your service account has appropriate permissions
 
 ## Contributing
