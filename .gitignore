@@ -19,3 +19,5 @@ __pycache__/
 
 # Ignore environment variables
 .env
+
+*.egg-info/

@@ -10,6 +10,7 @@ A smart Gmail organization tool that automatically categorizes emails using date
 - **Real-time Monitoring**: Watch for new emails using Gmail API webhooks and Google Cloud Pub/Sub
 - **Command-line Interface**: Flexible options for running the application
 - **Logging**: Comprehensive logging system for monitoring and debugging
+- **Test Coverage**: Comprehensive unit tests for reliability and maintainability
 
 ## Project Structure
 
@@ -21,6 +22,11 @@ A smart Gmail organization tool that automatically categorizes emails using date
   - `pubsub.py` - Processes notifications from Pub/Sub
   - `cli.py` - Command-line interface and entry point
 - `tests/` - Test directory
+  - `test_authenticate.py` - Tests for authentication module
+  - `test_sort.py` - Tests for date parsing functions
+  - `test_sort_labels.py` - Tests for label handling
+  - `test_pubsub.py` - Tests for real-time monitoring
+  - `test_watch.py` - Tests for Gmail API notifications
 - `run_sortmate.py` - Development script for easy testing
 
 ## Installation
@@ -75,7 +81,7 @@ If you're contributing to the project:
 1. Install development dependencies:
 ```bash
 pip install -r requirements.txt
-pip install pytest flake8 black  # Development tools
+pip install pytest pytest-mock pytest-cov  # Testing tools
 ```
 
 2. Set up pre-commit hooks (optional):
@@ -191,6 +197,46 @@ sortmate --monitor
 - Press Ctrl+C to gracefully stop monitoring
 - For production use, consider using a system service manager like systemd
 
+## Testing
+
+SortMate includes a comprehensive test suite to ensure reliability and make development easier.
+
+### Running Tests
+
+To run the tests:
+
+```bash
+# Install testing requirements
+pip install pytest pytest-mock pytest-cov
+
+# Run all tests
+pytest
+
+# Run tests with coverage report
+pytest --cov=sortmate
+
+# Run specific test file
+pytest tests/test_sort.py
+```
+
+### Test Structure
+
+- `test_authenticate.py`: Tests for Google authentication
+- `test_sort.py`: Tests for date parsing and sorting logic
+- `test_sort_labels.py`: Tests for Gmail label management
+- `test_pubsub.py`: Tests for Pub/Sub notification handling
+- `test_watch.py`: Tests for Gmail API watch setup
+
+### Testing Philosophy
+
+SortMate follows best practices for testing:
+- Unit tests for individual functions
+- Mocking of external services (Gmail API, Pub/Sub)
+- Test coverage for critical paths
+- Separate tests for normal operation and error cases
+
+For more details, see the [Unit Testing Guide](docs/testing_guide.md).
+
 ## Security Considerations
 
 SortMate handles sensitive Google API credentials. Follow these security best practices:
@@ -234,6 +280,7 @@ If you get a "No module named 'sortmate'" error:
 
 - [x] Core email sorting functionality
 - [x] Real-time monitoring of new emails
+- [x] Comprehensive unit test coverage
 - [ ] Add additional sorting methods (sender, subject, keywords)
 - [ ] Implement user interface (web-based or desktop)
 - [ ] Support custom label hierarchies and rules
@@ -249,9 +296,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Add tests for your changes
+4. Ensure all tests pass (`pytest`)
+5. Commit your changes (`git commit -m 'Add some amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
 ## License
 
