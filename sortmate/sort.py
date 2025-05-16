@@ -242,6 +242,31 @@ def get_date_label(service, email, label_cache):
     return None
 
 
+def get_sender_label(service, email, label_cache):
+"""Create and apply sender-based labels."""
+# extract sender info
+headers = email['payload']['headers']
+from_header = next((header['value'] for header in headers if header['name'] == 'From'), None)
+
+if from_header:
+    # extract domain or name for categorization
+    # create appropriate lables
+    # return label id
+
+return None
+
+
+def get_keyword_label(service, email, label_cache, keywords=None):
+    """Create and apply key-based labels based on email subject or content"""
+    # if no keywords provided, use defualt important ones
+    if keywords is None:
+        keywords = ['urgent', 'important', 'action', 'review']
+
+    # extract subject and snippet/body
+    # check for keywords
+    # create and apply appropriate labels
+    return
+
 def sort_past_emails(service, max_emails=None):
     """
     Sort emails in the inbox by applying date-based labels.
