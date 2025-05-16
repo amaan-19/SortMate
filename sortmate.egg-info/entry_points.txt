@@ -1,0 +1,3 @@
+[console_scripts]
+sortmate = sortmate.cli:main
+

@@ -7,23 +7,23 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
-# Set up logging
+# set up logging
 logger = logging.getLogger(__name__)
 
-# Load environment variables from .env for development
+# load environment variables from .env for development
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
     logger.warning("python-dotenv not installed, skipping .env loading")
 
-# Get configuration from environment variables
+# get configuration from environment variables
 CLIENT_SECRETS_FILE = os.environ.get('GOOGLE_CLIENT_SECRETS_FILE')
 if CLIENT_SECRETS_FILE:
     CLIENT_SECRETS_FILE = os.path.expanduser(CLIENT_SECRETS_FILE)
 
 TOKEN_DIR = os.environ.get('GOOGLE_TOKEN_DIR', '~/.config/SortMate/tokens')
-TOKEN_DIR = os.path.expanduser(TOKEN_DIR)  # Expand ~ to home directory
+TOKEN_DIR = os.path.expanduser(TOKEN_DIR)  # expand ~ to home directory
 
 SCOPES = os.environ.get('GOOGLE_API_SCOPES', 
                       'https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.labels').split(',')
@@ -36,12 +36,12 @@ def get_token_path():
     Returns:
         str: Path to the token file
     """
-    # Create a hash of the scopes to use in filename
+    # create a hash of the scopes to use in filename
     import hashlib
     scopes_hash = hashlib.md5(','.join(sorted(SCOPES)).encode()).hexdigest()[:8]
     token_filename = f"google_token_{scopes_hash}.pickle"
     
-    # Create token directory with secure permissions if it doesn't exist
+    # create token directory with secure permissions if it doesn't exist
     os.makedirs(TOKEN_DIR, mode=0o700, exist_ok=True)
     
     return os.path.join(TOKEN_DIR, token_filename)
@@ -67,7 +67,7 @@ def get_credentials():
     token_path = get_token_path()
     creds = None
     
-    # Try to load credentials from pickle file if it exists
+    # try to load credentials from pickle file if it exists
     if os.path.exists(token_path):
         try:
             with open(token_path, 'rb') as token:
@@ -81,7 +81,7 @@ def get_credentials():
             except Exception as remove_error:
                 logger.error(f"Could not remove token file: {remove_error}")
     
-    # If no valid credentials, get new ones
+    # if no valid credentials, get new ones
     if not creds or not creds.valid:
         logger.info("Need to get new credentials")
         if creds and creds.expired and creds.refresh_token:
@@ -93,9 +93,9 @@ def get_credentials():
                 logger.error(f"Error refreshing credentials: {e}")
                 creds = None  # Force new credentials flow
         
-        # If still no valid credentials, get new ones via OAuth flow
+        # if still no valid credentials, get new ones via OAuth flow
         if not creds or not creds.valid:
-            # Make sure the client secrets file exists
+            # make sure the client secrets file exists
             if not os.path.exists(CLIENT_SECRETS_FILE):
                 raise FileNotFoundError(
                     f"Client secrets file '{CLIENT_SECRETS_FILE}' not found."
@@ -105,7 +105,7 @@ def get_credentials():
             try:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     CLIENT_SECRETS_FILE, SCOPES)
-                # Try port 8080 first, fall back to dynamic port if needed
+                # try port 8080 first, fall back to dynamic port if needed
                 try:
                     creds = flow.run_local_server(port=8080)
                 except OSError:
@@ -119,10 +119,10 @@ def get_credentials():
             # Save the credentials for the next run
             try:
                 logger.info(f"Saving credentials to {token_path}")
-                os.chmod(TOKEN_DIR, 0o700)  # Ensure directory permissions are secure
+                os.chmod(TOKEN_DIR, 0o700)  # ensure directory permissions are secure
                 with open(token_path, 'wb') as token:
                     pickle.dump(creds, token)
-                os.chmod(token_path, 0o600)  # Restrict token file permissions
+                os.chmod(token_path, 0o600)  # restrict token file permissions
                 logger.info("Credentials saved successfully")
             except Exception as e:
                 logger.error(f"Error saving credentials: {e}")

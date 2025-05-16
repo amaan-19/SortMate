@@ -13,7 +13,7 @@ setup(
     name="sortmate",
     version="0.1.0",
     author="Amaan",
-    author_email="your.email@example.com",  # Replace with your email
+    author_email="amaanakhan523@gmail.com",  # Replace with your email
     description="A smart Gmail organization tool that automatically categorizes emails using date-based labels",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -36,7 +36,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "sortmate=sortmate.cli:main",  # Assumes you rename testing.py to cli.py
+            "sortmate=sortmate.cli:main",  
         ],
     },
     keywords="gmail, email, organization, automation, labels, google, api",

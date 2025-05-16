@@ -1,12 +1,12 @@
 """
-Gmail Organizer - Main Entry Point
+SortMate - Main Entry Point
 
-This script provides the main entry point for the Gmail Organizer application.
+This script provides the main entry point for the SortMate application.
 It handles authentication, sorting existing emails, and optionally setting up
 real-time monitoring for new emails.
 
 Usage:
-    python testing.py [--monitor] [--max-emails N] [--verbose]
+    sortmate [--monitor] [--max-emails N] [--verbose]
 
 Options:
     --monitor     Enable real-time email monitoring
@@ -16,6 +16,7 @@ Options:
 
 import argparse
 import logging
+import os
 import signal
 import sys
 import time
@@ -24,24 +25,23 @@ from google.cloud import pubsub_v1
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from authenticate import get_credentials
-from sort import sort_past_emails
-from watch import start_watch
-from pubsub import callback
+from sortmate.authenticate import get_credentials
+from sortmate.sort import sort_past_emails
+from sortmate.watch import start_watch
+from sortmate.pubsub import callback
 
-
-# configure logging
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logger = logging.getLogger('gmail_organizer')
+logger = logging.getLogger('sortmate')
 
 
 def parse_arguments():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description='Gmail Organizer')
+    parser = argparse.ArgumentParser(description='SortMate - Gmail Organizer')
     parser.add_argument('--monitor', action='store_true', 
                         help='Enable real-time email monitoring')
     parser.add_argument('--max-emails', type=int, default=None, 
@@ -54,28 +54,50 @@ def parse_arguments():
 def setup_monitoring(service):
     """Set up real-time email monitoring with Pub/Sub."""
     try:
+        # Get configuration from environment variables
+        project_id = os.environ.get('GOOGLE_CLOUD_PROJECT')
+        if not project_id:
+            logger.error("GOOGLE_CLOUD_PROJECT environment variable not set")
+            raise ValueError("GOOGLE_CLOUD_PROJECT must be set for monitoring")
+        
+        subscription_name = os.environ.get('PUBSUB_SUBSCRIPTION')
+        if not subscription_name:
+            logger.error("PUBSUB_SUBSCRIPTION environment variable not set")
+            raise ValueError("PUBSUB_SUBSCRIPTION must be set for monitoring")
+        
+        # Set up Gmail API watch notification
         logger.info("Setting up Gmail API watch notification")
         watch_response = start_watch(service)
-        logger.info(f"Watch notification set up. Expiration: {watch_response.get('expiration')}")
+        expiration = watch_response.get('expiration')
+        logger.info(f"Watch notification set up. Expiration: {expiration}")
         
-        # create subscriber client
+        # Create subscriber client
         logger.info("Creating Pub/Sub subscriber")
         subscriber = pubsub_v1.SubscriberClient()
-        subscription_path = 'projects/emailorganizer-445912/subscriptions/email_notifications-sub'
+        subscription_path = subscriber.subscription_path(project_id, subscription_name)
         
-        # subscribe to the topic
+        # Subscribe to the topic
         logger.info(f"Subscribing to: {subscription_path}")
-        subscriber.subscribe(subscription_path, callback=callback)
+        streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
         
-        return subscriber
+        # Store subscriber for cleanup
+        return subscriber, streaming_pull_future
+    
     except Exception as e:
         logger.error(f"Error setting up monitoring: {e}")
         raise
 
 
-def handle_shutdown(signal, frame, subscriber=None):
+def handle_shutdown(signal, frame, subscriber=None, streaming_pull_future=None):
     """Handle graceful shutdown."""
     logger.info("Shutdown signal received. Cleaning up...")
+    
+    if streaming_pull_future:
+        try:
+            streaming_pull_future.cancel()
+            logger.info("Pub/Sub streaming pull future cancelled")
+        except Exception as e:
+            logger.error(f"Error cancelling streaming pull future: {e}")
     
     if subscriber:
         try:
@@ -90,42 +112,54 @@ def handle_shutdown(signal, frame, subscriber=None):
 
 def main():
     """Main entry point."""
-    # parse command line arguments
+    # Parse command line arguments
     args = parse_arguments()
     
-    # set verbose logging if requested
+    # Set verbose logging if requested
     if args.verbose:
         logger.setLevel(logging.DEBUG)
+        logging.getLogger('sortmate').setLevel(logging.DEBUG)
         logger.debug("Verbose logging enabled")
     
     try:
-        # authenticate user
+        # Authenticate user
         logger.info("Authenticating with Google...")
         creds = get_credentials()
         
-        # build Gmail service
+        # Build Gmail service
         logger.info("Building Gmail API service...")
         service = build('gmail', 'v1', credentials=creds)
         
-        # sort existing emails
+        # Sort existing emails
         logger.info("Starting email sorting...")
         sort_past_emails(service, max_emails=args.max_emails)
         logger.info("Email sorting complete")
         
-        # set up monitoring if requested
+        # Set up monitoring if requested
         subscriber = None
+        streaming_pull_future = None
         if args.monitor:
             logger.info("Setting up email monitoring...")
-            subscriber = setup_monitoring(service)
+            subscriber, streaming_pull_future = setup_monitoring(service)
             
-            # register signal handlers for graceful shutdown
-            signal.signal(signal.SIGINT, lambda s, f: handle_shutdown(s, f, subscriber))
-            signal.signal(signal.SIGTERM, lambda s, f: handle_shutdown(s, f, subscriber))
+            # Register signal handlers for graceful shutdown
+            signal.signal(signal.SIGINT, 
+                         lambda s, f: handle_shutdown(s, f, subscriber, streaming_pull_future))
+            signal.signal(signal.SIGTERM, 
+                         lambda s, f: handle_shutdown(s, f, subscriber, streaming_pull_future))
             
-            # run indefinitely
-            logger.info("Listening for new emails. Press Ctrl+C to exit.")
-            while True:
-                time.sleep(60)
+            # Print monitoring information
+            logger.info("Monitoring active. New emails will be automatically sorted.")
+            logger.info("Press Ctrl+C to exit.")
+            
+            # Keep the main thread alive
+            try:
+                # Keep the main thread alive, which keeps the process alive.
+                while True:
+                    time.sleep(60)
+            except KeyboardInterrupt:
+                logger.info("Received keyboard interrupt")
+                handle_shutdown(None, None, subscriber, streaming_pull_future)
         
     except HttpError as e:
         logger.error(f"Gmail API error: {e}")
