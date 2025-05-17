@@ -11,7 +11,7 @@ import logging
 from googleapiclient.errors import HttpError
 
 # Set up logging
-logger = logging.getLogger('gmail_organizer')
+logger = logging.getLogger('sortmate.watch')
 
 def start_watch(service):
     """
