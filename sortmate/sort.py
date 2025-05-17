@@ -23,7 +23,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logger = logging.getLogger('gmail_organizer')
+logger = logging.getLogger('sortmate.sort')
 
 # Default keywords for content-based categorization
 DEFAULT_KEYWORDS = {

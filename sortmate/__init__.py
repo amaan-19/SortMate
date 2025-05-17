@@ -12,10 +12,13 @@ __author__ = 'Amaan Khan'
 from .authenticate import get_credentials
 from .sort import sort_past_emails
 from .watch import start_watch
+from .config import load_config, save_config
 
 # Define what gets imported with `from sortmate import *`
 __all__ = [
     'get_credentials',
     'sort_past_emails',
     'start_watch',
+    'load_config',
+    'save_config',
 ]

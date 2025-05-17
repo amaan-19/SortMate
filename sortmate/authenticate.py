@@ -25,8 +25,9 @@ if CLIENT_SECRETS_FILE:
 TOKEN_DIR = os.environ.get('GOOGLE_TOKEN_DIR', '~/.config/SortMate/tokens')
 TOKEN_DIR = os.path.expanduser(TOKEN_DIR)  # expand ~ to home directory
 
-SCOPES = os.environ.get('GOOGLE_API_SCOPES', 
-                      'https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.labels').split(',')
+SCOPES_STRING = os.environ.get('GOOGLE_API_SCOPES', 
+                      'https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.labels')
+SCOPES = [scope.strip() for scope in SCOPES_STRING.split(',')]
 
 
 def get_token_path():

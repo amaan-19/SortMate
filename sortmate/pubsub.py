@@ -17,12 +17,7 @@ from sortmate.authenticate import get_credentials
 from sortmate.sort import get_date_label, fetch_labels, apply_labels_grouped
 
 # set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-logger = logging.getLogger('gmail_organizer')
+logger = logging.getLogger('sortmate.pubsub')
 
 # cache for Gmail API service instance
 _gmail_service = None

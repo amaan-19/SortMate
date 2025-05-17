@@ -58,11 +58,13 @@ def setup_monitoring(service):
         project_id = os.environ.get('GOOGLE_CLOUD_PROJECT')
         if not project_id:
             logger.error("GOOGLE_CLOUD_PROJECT environment variable not set")
+            logger.info("To enable monitoring, please set GOOGLE_CLOUD_PROJECT in your .env file")
             raise ValueError("GOOGLE_CLOUD_PROJECT must be set for monitoring")
         
         subscription_name = os.environ.get('PUBSUB_SUBSCRIPTION')
         if not subscription_name:
             logger.error("PUBSUB_SUBSCRIPTION environment variable not set")
+            logger.info("To enable monitoring, please set PUBSUB_SUBSCRIPTION in your .env file")
             raise ValueError("PUBSUB_SUBSCRIPTION must be set for monitoring")
         
         # Set up Gmail API watch notification
@@ -73,8 +75,13 @@ def setup_monitoring(service):
         
         # Create subscriber client
         logger.info("Creating Pub/Sub subscriber")
-        subscriber = pubsub_v1.SubscriberClient()
-        subscription_path = subscriber.subscription_path(project_id, subscription_name)
+        try:
+            subscriber = pubsub_v1.SubscriberClient()
+            subscription_path = subscriber.subscription_path(project_id, subscription_name)
+        except Exception as e:
+            logger.error(f"Failed to create Pub/Sub subscriber: {e}")
+            logger.info("Make sure you have the correct Google Cloud credentials configured")
+            raise
         
         # Subscribe to the topic
         logger.info(f"Subscribing to: {subscription_path}")
